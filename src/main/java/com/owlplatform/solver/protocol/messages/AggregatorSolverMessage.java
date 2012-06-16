@@ -19,11 +19,6 @@
 
 package com.owlplatform.solver.protocol.messages;
 
-import java.util.Date;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * The base class for all messages between the aggregator and solvers, excluding
  * the handshake message.
@@ -32,12 +27,6 @@ import org.slf4j.LoggerFactory;
  * 
  */
 public abstract class AggregatorSolverMessage {
-
-	/**
-	 * Logging facility for this class.
-	 */
-	private static Logger log = LoggerFactory
-			.getLogger(AggregatorSolverMessage.class);
 
 	/**
 	 * The time that the packet arrived at the solver.

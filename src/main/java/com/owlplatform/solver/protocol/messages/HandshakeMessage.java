@@ -35,190 +35,204 @@ import com.owlplatform.common.util.NumericUtils;
  * 
  */
 public class HandshakeMessage {
-	
-	/**
-	 * Logging facility.
-	 */
-	private static final Logger log = LoggerFactory.getLogger(HandshakeMessage.class);
 
-	/**
-	 * The length of the handshake message in octets.
-	 */
-	public static final int MESSAGE_LENGTH = 27;
+  /**
+   * Logging facility.
+   */
+  private static final Logger log = LoggerFactory
+      .getLogger(HandshakeMessage.class);
 
-	/**
-	 * The protocol string used in the handshake message.
-	 */
-	public static final String PROTOCOL_STRING = "GRAIL solver protocol";
+  /**
+   * The length of the handshake message in octets.
+   */
+  public static final int MESSAGE_LENGTH = 27;
 
-	/**
-	 * The length, in octets, of the protocol string sent in the handshake
-	 * message.
-	 */
-	public static final int PROTOCOL_STRING_LENGTH = 21;
+  /**
+   * The protocol string used in the handshake message.
+   */
+  public static final String PROTOCOL_STRING = "GRAIL solver protocol";
 
-	/**
-	 * The protocol version number.
-	 */
-	public static final byte PROTOCOL_VERSION = 0;
+  /**
+   * The length, in octets, of the protocol string sent in the handshake
+   * message.
+   */
+  public static final int PROTOCOL_STRING_LENGTH = 21;
 
-	/**
-	 * Bitfield indicating which extensions (if any) are in use by the sender.
-	 */
-	public static final byte PROTOCOL_RESERVED_BITS = 0;
+  /**
+   * The protocol version number.
+   */
+  public static final byte PROTOCOL_VERSION = 0;
 
-	/**
-	 * Generates a basic handshake message according to the most recent protocol
-	 * definition.
-	 * 
-	 * @return a basic handshake message.
-	 */
-	public static HandshakeMessage getDefaultMessage() {
-		HandshakeMessage message = new HandshakeMessage();
-		message.setProtocolString(HandshakeMessage.PROTOCOL_STRING);
-		message.setReservedBits(HandshakeMessage.PROTOCOL_RESERVED_BITS);
-		message.setStringLength(HandshakeMessage.PROTOCOL_STRING_LENGTH);
-		message.setVersionNumber(HandshakeMessage.PROTOCOL_VERSION);
-		return message;
-	}
+  /**
+   * Bitfield indicating which extensions (if any) are in use by the sender.
+   */
+  public static final byte PROTOCOL_RESERVED_BITS = 0;
 
-	/**
-	 * The length of the protocol string, in octets.
-	 */
-	protected int stringLength;
+  /**
+   * Generates a basic handshake message according to the most recent protocol
+   * definition.
+   * 
+   * @return a basic handshake message.
+   */
+  public static HandshakeMessage getDefaultMessage() {
+    HandshakeMessage message = new HandshakeMessage();
+    message.setProtocolString(HandshakeMessage.PROTOCOL_STRING);
+    message.setReservedBits(HandshakeMessage.PROTOCOL_RESERVED_BITS);
+    message.setStringLength(HandshakeMessage.PROTOCOL_STRING_LENGTH);
+    message.setVersionNumber(HandshakeMessage.PROTOCOL_VERSION);
+    return message;
+  }
 
-	/**
-	 * The protocol string for this handshake message.
-	 */
-	protected String protocolString;
+  /**
+   * The length of the protocol string, in octets.
+   */
+  protected int stringLength;
 
-	/**
-	 * The version number for this handshake message.
-	 */
-	protected byte versionNumber;
+  /**
+   * The protocol string for this handshake message.
+   */
+  protected String protocolString;
 
-	/**
-	 * The bitfield indicating which extensions are in use (if any) for this
-	 * handshake message.
-	 */
-	protected byte reservedBits;
+  /**
+   * The version number for this handshake message.
+   */
+  protected byte versionNumber;
 
-	/**
-	 * Retrieves the length of the protocol string (in octets) for this
-	 * handshake message.
-	 * 
-	 * @return the length fo the protocol string in octets.
-	 */
-	public int getStringLength() {
-		return this.stringLength;
-	}
+  /**
+   * The bitfield indicating which extensions are in use (if any) for this
+   * handshake message.
+   */
+  protected byte reservedBits;
 
-	/**
-	 * Sets the length of the protocol string (in octets) for this handshake
-	 * message.
-	 * 
-	 * @param stringLength
-	 */
-	public void setStringLength(int stringLength) {
-		this.stringLength = stringLength;
-	}
+  /**
+   * Retrieves the length of the protocol string (in octets) for this handshake
+   * message.
+   * 
+   * @return the length fo the protocol string in octets.
+   */
+  public int getStringLength() {
+    return this.stringLength;
+  }
 
-	/**
-	 * Retrieves the protocol string for this handshake message.
-	 * 
-	 * @return the protocol string for this handshake message.
-	 */
-	public String getProtocolString() {
-		return this.protocolString;
-	}
+  /**
+   * Sets the length of the protocol string (in octets) for this handshake
+   * message.
+   * 
+   * @param stringLength
+   */
+  public void setStringLength(int stringLength) {
+    this.stringLength = stringLength;
+  }
 
-	/**
-	 * Sets the protocol string for this handshake message.
-	 * 
-	 * @param protocolString
-	 *            the protocol string for this handshake message.
-	 */
-	public void setProtocolString(String protocolString) {
-		this.protocolString = protocolString;
-	}
+  /**
+   * Retrieves the protocol string for this handshake message.
+   * 
+   * @return the protocol string for this handshake message.
+   */
+  public String getProtocolString() {
+    return this.protocolString;
+  }
 
-	/**
-	 * Retrieves the version number for this handshake message.
-	 * 
-	 * @return the version number for this handshake message.
-	 */
-	public byte getVersionNumber() {
-		return this.versionNumber;
-	}
+  /**
+   * Sets the protocol string for this handshake message.
+   * 
+   * @param protocolString
+   *          the protocol string for this handshake message.
+   */
+  public void setProtocolString(String protocolString) {
+    this.protocolString = protocolString;
+  }
 
-	/**
-	 * Sets the version number for this handshake message.
-	 * 
-	 * @param versionNumber
-	 *            the version number for this handshake message.
-	 */
-	public void setVersionNumber(byte versionNumber) {
-		this.versionNumber = versionNumber;
-	}
+  /**
+   * Retrieves the version number for this handshake message.
+   * 
+   * @return the version number for this handshake message.
+   */
+  public byte getVersionNumber() {
+    return this.versionNumber;
+  }
 
-	/**
-	 * Retrieves the reserved bitfield for this handshake message.
-	 * 
-	 * @return the reserved bitfield for this handshake message.
-	 */
-	public byte getReservedBits() {
-		return this.reservedBits;
-	}
+  /**
+   * Sets the version number for this handshake message.
+   * 
+   * @param versionNumber
+   *          the version number for this handshake message.
+   */
+  public void setVersionNumber(byte versionNumber) {
+    this.versionNumber = versionNumber;
+  }
 
-	/**
-	 * Sets the reserved bitfield for this handshake message.
-	 * 
-	 * @param reservedBits
-	 *            the reserved bitfield for this handshake message.
-	 */
-	public void setReservedBits(byte reservedBits) {
-		this.reservedBits = reservedBits;
-	}
+  /**
+   * Retrieves the reserved bitfield for this handshake message.
+   * 
+   * @return the reserved bitfield for this handshake message.
+   */
+  public byte getReservedBits() {
+    return this.reservedBits;
+  }
 
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append("Solver Handshake: ").append(this.getStringLength()).append(
-				", ").append(this.getProtocolString()).append(", ").append(
-				NumericUtils.toHexString(this.getVersionNumber())).append(", ")
-				.append(NumericUtils.toHexString(this.getReservedBits()));
-		return sb.toString();
-	}
+  /**
+   * Sets the reserved bitfield for this handshake message.
+   * 
+   * @param reservedBits
+   *          the reserved bitfield for this handshake message.
+   */
+  public void setReservedBits(byte reservedBits) {
+    this.reservedBits = reservedBits;
+  }
 
-	@Override
-	public boolean equals(Object o)
-	{
-		if(o instanceof HandshakeMessage)
-		{
-			return this.equals((HandshakeMessage)o);
-		}
-		return super.equals(o);
-	}
-	
-	public boolean equals(HandshakeMessage message)
-	{
-		if(this.versionNumber != message.versionNumber)
-			return false;
-		if(this.reservedBits != message.reservedBits)
-			return false;
-		if(this.stringLength != message.stringLength)
-			return false;
-		try {
-		byte[] myStringBytes = this.protocolString.getBytes("ASCII");
-		byte[] yourStringBytes = message.protocolString.getBytes("ASCII");
-		if(!Arrays.equals(myStringBytes, yourStringBytes))
-			return false;
-		}
-		catch(UnsupportedEncodingException uee)
-		{
-			log.error("Could not decode ASCII characters.");
-			return false;
-		}
-		return true;
-	}
+  @Override
+  public String toString() {
+    StringBuffer sb = new StringBuffer();
+    sb.append("Solver Handshake: ").append(this.getStringLength()).append(", ")
+        .append(this.getProtocolString()).append(", ")
+        .append(NumericUtils.toHexString(this.getVersionNumber())).append(", ")
+        .append(NumericUtils.toHexString(this.getReservedBits()));
+    return sb.toString();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o instanceof HandshakeMessage) {
+      return this.equals((HandshakeMessage) o);
+    }
+    return super.equals(o);
+  }
+
+  /**
+   * Compares this {@code HandshakeMessage} to antoher based on version number,
+   * reserved bits, and protocol string.
+   * 
+   * @param message
+   *          another {@code HandshakeMessage}
+   * @return {@code true} if this object and {@code message} are equal, else
+   *         {@code false}.
+   */
+  public boolean equals(HandshakeMessage message) {
+    if (this.versionNumber != message.versionNumber)
+      return false;
+    if (this.reservedBits != message.reservedBits)
+      return false;
+    if (this.stringLength != message.stringLength)
+      return false;
+    try {
+      byte[] myStringBytes = this.protocolString.getBytes("ASCII");
+      byte[] yourStringBytes = message.protocolString.getBytes("ASCII");
+      if (!Arrays.equals(myStringBytes, yourStringBytes))
+        return false;
+    } catch (UnsupportedEncodingException uee) {
+      log.error("Could not decode ASCII characters.");
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = this.stringLength;
+    hash ^= this.protocolString.hashCode();
+    hash ^= Arrays
+        .hashCode(new byte[] { this.versionNumber, this.reservedBits });
+    return hash;
+  }
 }
