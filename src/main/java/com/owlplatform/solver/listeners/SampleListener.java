@@ -19,18 +19,26 @@
 
 package com.owlplatform.solver.listeners;
 
-
-
 import com.owlplatform.common.SampleMessage;
 import com.owlplatform.solver.SolverAggregatorInterface;
 
 /**
  * Implementing classes will respond to the arrival of Sample messages from the
  * aggregator.
- * @author Robert Moore 
- *
+ * 
+ * @author Robert Moore
+ * 
  */
 public interface SampleListener {
 
-	public void sampleReceived(SolverAggregatorInterface aggregator, SampleMessage sample);
+  /**
+   * Called each time a {@code SampleMessage} arrives and is decoded. Calls may
+   * be invoked within different threads, so any code executed within the method
+   * body should be thread-safe.
+   * 
+   * @param aggregator
+   * @param sample
+   */
+  public void sampleReceived(SolverAggregatorInterface aggregator,
+      SampleMessage sample);
 }
