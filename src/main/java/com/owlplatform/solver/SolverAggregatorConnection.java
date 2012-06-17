@@ -19,10 +19,10 @@
 
 package com.owlplatform.solver;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +33,32 @@ import com.owlplatform.solver.listeners.SampleListener;
 import com.owlplatform.solver.protocol.messages.SubscriptionMessage;
 import com.owlplatform.solver.rules.SubscriptionRequestRule;
 
+/**
+ * A simplified interface between a solver and an aggregator.  Buffers samples received from the aggregator and provides
+ * a simple, synchronous interface to the aggregator for solvers.
+ * 
+ * @author Robert Moore
+ *
+ */
 public class SolverAggregatorConnection {
 
+  /**
+   * Private class to hide interface methods from classes using the {@code Solver AggregatorSolverProtocolCodecFactory}.
+   * @author Robert Moore
+   *
+   */
 	private static final class Handler implements ConnectionListener,
 			SampleListener {
 
+	  /**
+	   * The {@code SolverAggregatorInterface} that will actually handle the events.
+	   */
 		private final SolverAggregatorConnection parent;
 
+		/**
+		 * Creates a new handler for the specified {@code SolverAggregatorConnection}.
+		 * @param parent the actual handler of the events.
+		 */
 		public Handler(SolverAggregatorConnection parent) {
 			this.parent = parent;
 		}
@@ -51,14 +70,12 @@ public class SolverAggregatorConnection {
 
 		@Override
 		public void connectionEstablished(SolverAggregatorInterface aggregator) {
-			// TODO Auto-generated method stub
-
+		  this.parent.subscriptionAcknowledged = false;
 		}
 
 		@Override
 		public void connectionInterrupted(SolverAggregatorInterface aggregator) {
-			// TODO Auto-generated method stub
-
+		  // Ignored
 		}
 
 		@Override
@@ -74,24 +91,54 @@ public class SolverAggregatorConnection {
 		}
 	}
 
+	/**
+	 * Logger for this class.
+	 */
 	private static final Logger log = LoggerFactory
 			.getLogger(SolverAggregatorConnection.class);
 
+	/**
+	 * The internal interface to the aggregator.
+	 */
 	protected final SolverAggregatorInterface agg = new SolverAggregatorInterface();
 
+	/**
+	 * Queue of samples that were received from the aggregator but not yet
+	 * taken by the solver.  Bounded to 1,000 samples by default.
+	 */
 	protected final LinkedBlockingQueue<SampleMessage> sampleQueue = new LinkedBlockingQueue<SampleMessage>(
 			1000);
 
+	/**
+	 * Private handler to hide the event methods from outside classes.
+	 */
 	protected final Handler handler = new Handler(this);
-
+	
+	/**
+	 * Flag to indicate if the aggregator is disconnected.
+	 */
 	protected boolean connectionDead = false;
 
+	/**
+	 * Map of subscription rules to their request numbers.  Used internally to cancel a subscription
+	 * request on behalf of the solver.
+	 */
 	protected final Map<Integer, SubscriptionRequestRule> ruleMap = new ConcurrentHashMap<Integer, SubscriptionRequestRule>();
 
-	protected volatile int nextRuleNum = 0;
+	/**
+	 * Stores the next available rule number for this connection.
+	 */
+	protected AtomicInteger nextRuleNum = new AtomicInteger(0);
 
+	/**
+	 * Flag to indicate whether full buffers should be logged with a warning.  Defaults to false.
+	 */
 	protected boolean warnBufferFull = false;
 	
+	
+	/**
+	 * Flag to indicate whether at least one subscription response message has been received on the current session.
+	 */
 	protected boolean subscriptionAcknowledged = false;
 
 	/**
@@ -125,19 +172,34 @@ public class SolverAggregatorConnection {
 	}
 
 	/**
-	 * Connects to the aggregator if it is not already connected.
+	 * Connects to the aggregator if it is not already connected, returning after the specified timeout
+	 * value if the connection has not succeeded in that time.
 	 * 
+	 * @param timeout the connection timeout, in milliseconds.
 	 * @return {@code true} if the connection succeeds, else {@code false}.
 	 */
-	public boolean connect() {
-		return this.agg.doConnectionSetup();
+	public boolean connect(long timeout) {
+	  
+		return !(this.connectionDead = this.agg.connect(timeout));
 	}
+	
+	/**
+   * Connects to the aggregator if it is not already connected.  This method
+   * has been replaced with {@link #connect(long)}.
+   * 
+   * @return {@code true} if the connection succeeds, else {@code false}.
+   */
+	@Deprecated
+  public boolean connect() {
+    
+    return !(this.connectionDead = this.agg.connect(0));
+  }
 
 	/**
 	 * Disconnects from the aggregator.
 	 */
 	public void disconnect() {
-		this.agg.doConnectionTearDown();
+		this.agg.disconnect();
 	}
 
 	/**
@@ -229,7 +291,7 @@ public class SolverAggregatorConnection {
 	 *         Request Rule.
 	 */
 	public int addRule(final SubscriptionRequestRule rule) {
-		Integer theRuleNum = Integer.valueOf(this.nextRuleNum);
+		Integer theRuleNum = Integer.valueOf(this.nextRuleNum.getAndIncrement());
 		synchronized (this.ruleMap) {
 			if (!this.ruleMap.values().contains(rule)) {
 				this.ruleMap.put(theRuleNum, rule);
@@ -242,7 +304,7 @@ public class SolverAggregatorConnection {
 					msg.setMessageType(SubscriptionMessage.SUBSCRIPTION_MESSAGE_ID);
 					this.agg.getSession().write(msg);
 				}
-				++this.nextRuleNum;
+				
 				return theRuleNum.intValue();
 			}
 			log.warn("Rule {} is already configured for use.", rule);
@@ -266,7 +328,7 @@ public class SolverAggregatorConnection {
 			SubscriptionRequestRule rule = this.ruleMap.remove(Integer
 					.valueOf(ruleNum));
 			if (this.agg.isConnected()) {
-				this.agg.disconnect();
+				this.agg._disconnect();
 			}
 			return rule;
 		}
@@ -302,13 +364,23 @@ public class SolverAggregatorConnection {
 		return "Aggregator @ " + this.agg.getHost() + ":" + this.agg.getPort();
 	}
 
+	/**
+	 * Called when the connection to the aggregator has permanently died.
+	 * @param aggregator
+	 */
 	void connectionEnded(SolverAggregatorInterface aggregator) {
 		this.connectionDead = true;
+		
 		synchronized (this.sampleQueue) {
 			this.sampleQueue.notifyAll();
 		}
 	}
 
+	/**
+	 * Called when the aggregator sends a sample.  Enqueues the sample into the internal buffer.
+	 * @param aggregator the aggregator that sent the sample.
+	 * @param sample the sample that was sent.
+	 */
 	void sampleReceived(SolverAggregatorInterface aggregator,
 			SampleMessage sample) {
 		if (!this.sampleQueue.offer(sample) && this.warnBufferFull) {
@@ -316,8 +388,13 @@ public class SolverAggregatorConnection {
 		}
 	}
 
+	/**
+	 * Flag to indicate whether a subscription response was received. When true, it will be possible
+	 * for Samples to be buffered.
+	 * @return {@code true} if at least 1 subscription response was received.
+	 */
 	public boolean isSubscriptionAcknowledged() {
-		return subscriptionAcknowledged;
+		return this.subscriptionAcknowledged;
 	}
 
 }

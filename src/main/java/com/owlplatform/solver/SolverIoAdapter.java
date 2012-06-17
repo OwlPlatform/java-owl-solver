@@ -27,6 +27,11 @@ import com.owlplatform.common.SampleMessage;
 import com.owlplatform.solver.protocol.messages.HandshakeMessage;
 import com.owlplatform.solver.protocol.messages.SubscriptionMessage;
 
+/**
+ * An interface to define classes that respond to events on a Solver-Aggregator connection.
+ * @author Robert Moore
+ *
+ */
 public interface SolverIoAdapter
 {
 	/**
@@ -65,21 +70,21 @@ public interface SolverIoAdapter
     /**
      * Called when a SubscriptionMessage (request) has been received.
      * @param session
-     * @param subscriptionRequestMessage
+     * @param subscriptionMessage
      */
     public void subscriptionRequestReceived(IoSession session, SubscriptionMessage subscriptionMessage);
     
     /**
      * Called after a SubscriptionMessage (request) has been sent.
      * @param session
-     * @param subsriptionMessage
+     * @param subscriptionMessage
      */
     public void subscriptionRequestSent(IoSession session, SubscriptionMessage subscriptionMessage);
     
     /**
      * Called after a SubscriptionMessage (response) has been sent.
      * @param session
-     * @param subscriptionRequestMessage
+     * @param subscriptionMessage
      */
     public void subscriptionResponseSent(IoSession session, SubscriptionMessage subscriptionMessage);
     
