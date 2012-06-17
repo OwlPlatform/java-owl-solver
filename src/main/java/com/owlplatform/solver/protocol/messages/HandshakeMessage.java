@@ -141,6 +141,16 @@ public class HandshakeMessage {
    */
   public void setProtocolString(String protocolString) {
     this.protocolString = protocolString;
+    if (protocolString != null) {
+      try {
+        this.stringLength = protocolString.getBytes("US-ASCII").length;
+      } catch (UnsupportedEncodingException uee) {
+        this.stringLength = 0;
+        log.error("Couldn't encode to US-ASCII.", uee);
+      }
+    } else {
+      this.stringLength = 0;
+    }
   }
 
   /**
@@ -184,10 +194,13 @@ public class HandshakeMessage {
   @Override
   public String toString() {
     StringBuffer sb = new StringBuffer();
-    sb.append("Solver Handshake: ").append(this.getStringLength()).append(", ")
-        .append(this.getProtocolString()).append(", ")
-        .append(NumericUtils.toHexString(this.getVersionNumber())).append(", ")
-        .append(NumericUtils.toHexString(this.getReservedBits()));
+    sb.append("Solver Handshake: ")
+        .append(this.getStringLength())
+        .append(", ")
+        .append(
+            this.getProtocolString() == null ? "" : this.getProtocolString())
+        .append(", ").append(NumericUtils.toHexString(this.getVersionNumber()))
+        .append(", ").append(NumericUtils.toHexString(this.getReservedBits()));
     return sb.toString();
   }
 
@@ -215,13 +228,21 @@ public class HandshakeMessage {
       return false;
     if (this.stringLength != message.stringLength)
       return false;
-    try {
-      byte[] myStringBytes = this.protocolString.getBytes("ASCII");
-      byte[] yourStringBytes = message.protocolString.getBytes("ASCII");
-      if (!Arrays.equals(myStringBytes, yourStringBytes))
+    if (this.protocolString != null) {
+      if (message.protocolString == null) {
         return false;
-    } catch (UnsupportedEncodingException uee) {
-      log.error("Could not decode ASCII characters.");
+      }
+      try {
+
+        byte[] myStringBytes = this.protocolString.getBytes("ASCII");
+        byte[] yourStringBytes = message.protocolString.getBytes("ASCII");
+        if (!Arrays.equals(myStringBytes, yourStringBytes))
+          return false;
+      } catch (UnsupportedEncodingException uee) {
+        log.error("Could not decode ASCII characters.");
+        return false;
+      }
+    } else if (message.protocolString != null) {
       return false;
     }
     return true;
@@ -229,10 +250,13 @@ public class HandshakeMessage {
 
   @Override
   public int hashCode() {
-    int hash = this.stringLength;
-    hash ^= this.protocolString.hashCode();
-    hash ^= Arrays
-        .hashCode(new byte[] { this.versionNumber, this.reservedBits });
+
+    int hash = Arrays.hashCode(new byte[] { this.versionNumber,
+        this.reservedBits });
+    if (this.protocolString != null) {
+      hash ^= this.stringLength;
+      hash ^= this.protocolString.hashCode();
+    }
     return hash;
   }
 }
