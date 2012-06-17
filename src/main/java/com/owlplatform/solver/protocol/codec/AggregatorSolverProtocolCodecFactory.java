@@ -25,29 +25,45 @@ import com.owlplatform.common.SampleMessage;
 import com.owlplatform.solver.protocol.messages.HandshakeMessage;
 import com.owlplatform.solver.protocol.messages.SubscriptionMessage;
 
+/**
+ * Factory for generating Solver-Aggregator protocol codecs.
+ * 
+ * @author Robert Moore
+ * 
+ */
 public class AggregatorSolverProtocolCodecFactory extends
-		DemuxingProtocolCodecFactory {
-    
-    public static final String CODEC_NAME = "Grail Aggregator-Solver codec";
-    
-	public AggregatorSolverProtocolCodecFactory(boolean isServer) {
-		super();
-		if (isServer) {
-			super.addMessageEncoder(HandshakeMessage.class,
-					HandshakeEncoder.class);
-			super.addMessageEncoder(SubscriptionMessage.class, SubscriptionMessageEncoder.class);
-			super.addMessageEncoder(SampleMessage.class, SampleEncoder.class);
-			
-			super.addMessageDecoder(SubscriptionMessageDecoder.class);
-			super.addMessageDecoder(HandshakeDecoder.class);
-		} else {
-			super.addMessageEncoder(SubscriptionMessage.class, SubscriptionMessageEncoder.class);
-			super.addMessageEncoder(HandshakeMessage.class,
-					HandshakeEncoder.class);
-			
-			super.addMessageDecoder(SubscriptionMessageDecoder.class);
-			super.addMessageDecoder(HandshakeDecoder.class);
-			super.addMessageDecoder(SampleDecoder.class);
-		}
-	}
+    DemuxingProtocolCodecFactory {
+
+  /**
+   * Codec name for inserting into filter chains.
+   */
+  public static final String CODEC_NAME = "Grail Aggregator-Solver codec";
+
+  /**
+   * Creates a new protocol codec factory for either a solver or aggregator.
+   * 
+   * @param isServer
+   *          {@code true} if this protocol codec factory is for an aggregator,
+   *          or {@code false} for solvers.
+   */
+  public AggregatorSolverProtocolCodecFactory(boolean isServer) {
+    super();
+    if (isServer) {
+      super.addMessageEncoder(HandshakeMessage.class, HandshakeEncoder.class);
+      super.addMessageEncoder(SubscriptionMessage.class,
+          SubscriptionMessageEncoder.class);
+      super.addMessageEncoder(SampleMessage.class, SampleEncoder.class);
+
+      super.addMessageDecoder(SubscriptionMessageDecoder.class);
+      super.addMessageDecoder(HandshakeDecoder.class);
+    } else {
+      super.addMessageEncoder(SubscriptionMessage.class,
+          SubscriptionMessageEncoder.class);
+      super.addMessageEncoder(HandshakeMessage.class, HandshakeEncoder.class);
+
+      super.addMessageDecoder(SubscriptionMessageDecoder.class);
+      super.addMessageDecoder(HandshakeDecoder.class);
+      super.addMessageDecoder(SampleDecoder.class);
+    }
+  }
 }

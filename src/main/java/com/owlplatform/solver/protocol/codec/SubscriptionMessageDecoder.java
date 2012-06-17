@@ -19,8 +19,6 @@
 
 package com.owlplatform.solver.protocol.codec;
 
-import java.nio.charset.Charset;
-
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
@@ -33,84 +31,110 @@ import com.owlplatform.solver.protocol.messages.SubscriptionMessage;
 import com.owlplatform.solver.protocol.messages.Transmitter;
 import com.owlplatform.solver.rules.SubscriptionRequestRule;
 
+/**
+ * Decodes a {@code SubscriptionMessage} according to the Solver-Aggregator
+ * protocol.
+ * 
+ * @author Robert Moore
+ * 
+ */
 public class SubscriptionMessageDecoder implements MessageDecoder {
-	private static final Logger log = LoggerFactory
-			.getLogger(SubscriptionMessageDecoder.class);
+  /**
+   * Logger for this class.
+   */
+  private static final Logger log = LoggerFactory
+      .getLogger(SubscriptionMessageDecoder.class);
 
-	public MessageDecoderResult decodable(IoSession session, IoBuffer in) {
-		if (in.prefixedDataAvailable(4, 65535)) {
-			in.mark();
-			int messageLength = in.getInt();
-			if (messageLength < 1) {
-				in.reset();
-				return MessageDecoderResult.NOT_OK;
-			}
+  @Override
+  public MessageDecoderResult decodable(IoSession session, IoBuffer in) {
+    if (in.prefixedDataAvailable(4, 65535)) {
+      in.mark();
+      int messageLength = in.getInt();
+      if (messageLength < 1) {
+        in.reset();
+        return MessageDecoderResult.NOT_OK;
+      }
 
-			byte messageType = in.get();
-			in.reset();
-			if (messageType == SubscriptionMessage.RESPONSE_MESSAGE_ID
-					|| messageType == SubscriptionMessage.SUBSCRIPTION_MESSAGE_ID) {
-				return MessageDecoderResult.OK;
-			}
+      byte messageType = in.get();
+      in.reset();
+      if (messageType == SubscriptionMessage.RESPONSE_MESSAGE_ID
+          || messageType == SubscriptionMessage.SUBSCRIPTION_MESSAGE_ID) {
+        return MessageDecoderResult.OK;
+      }
 
-			return MessageDecoderResult.NOT_OK;
-		}
+      return MessageDecoderResult.NOT_OK;
+    }
 
-		return MessageDecoderResult.NEED_DATA;
-	}
+    return MessageDecoderResult.NEED_DATA;
+  }
 
-	public MessageDecoderResult decode(IoSession session, IoBuffer in,
-			ProtocolDecoderOutput out) throws Exception {
+  @Override
+  public MessageDecoderResult decode(IoSession session, IoBuffer in,
+      ProtocolDecoderOutput out) throws Exception {
 
-		SubscriptionMessage message = new SubscriptionMessage();
-		int messageLength = in.getInt();
-		log.debug("Full message length is {}.", messageLength);
-		message.setMessageType(in.get());
-		log.debug("Message type {}.", message.getMessageType());
+    SubscriptionMessage message = new SubscriptionMessage();
+    int messageLength = in.getInt();
+    if (log.isDebugEnabled()) {
+      log.debug("Full message length is {}.", Integer.valueOf(messageLength));
+    }
+    message.setMessageType(in.get());
+    if (log.isDebugEnabled()) {
+      log.debug("Message type {}.", Byte.valueOf(message.getMessageType()));
+    }
 
-		int numRules = in.getInt();
-		log.debug("{} rules.", numRules);
-		if (numRules == 0) {
-			log.warn(
-					"No subscription rules sent.");
-		}
+    int numRules = in.getInt();
+    if (log.isDebugEnabled()) {
+      log.debug("{} rules.", Integer.valueOf(numRules));
+    }
+    if (numRules == 0) {
+      log.warn("No subscription rules sent.");
+    }
 
-		message.setRules(new SubscriptionRequestRule[numRules]);
-		for (int rulesRead = 0; rulesRead < numRules; ++rulesRead) {
-			SubscriptionRequestRule rule = new SubscriptionRequestRule();
-			rule.setPhysicalLayer(in.get());
-			log.debug("[Rule {}] Physical layer {}.", rulesRead, rule
-					.getPhysicalLayer());
+    message.setRules(new SubscriptionRequestRule[numRules]);
+    for (int rulesRead = 0; rulesRead < numRules; ++rulesRead) {
+      SubscriptionRequestRule rule = new SubscriptionRequestRule();
+      rule.setPhysicalLayer(in.get());
+      if (log.isDebugEnabled()) {
+        log.debug("[Rule {}] Physical layer {}.", Integer.valueOf(rulesRead),
+            Byte.valueOf(rule.getPhysicalLayer()));
+      }
 
-			int numTxers = in.getInt();
-			log.debug("[Rule {}] Num txers {}.", rulesRead, numTxers);
-			rule.setTransmitters(new Transmitter[numTxers]);
-			for (int txersRead = 0; txersRead < numTxers; ++txersRead) {
-				Transmitter transmitter = new Transmitter();
-				byte[] baseId = new byte[Transmitter.TRANSMITTER_ID_SIZE];
-				byte[] mask = new byte[Transmitter.TRANSMITTER_ID_SIZE];
-				in.get(baseId);
-				in.get(mask);
-				transmitter.setBaseId(baseId);
-				transmitter.setMask(mask);
-				rule.getTransmitters()[txersRead] = transmitter;
-				log.debug("[Rule {}] Transmitter: {}.", rulesRead, transmitter);
-			}
+      int numTxers = in.getInt();
+      if(log.isDebugEnabled()){
+        log.debug("[Rule {}] Num txers {}.", Integer.valueOf(rulesRead), Integer.valueOf(numTxers));
+      }
+      rule.setTransmitters(new Transmitter[numTxers]);
+      for (int txersRead = 0; txersRead < numTxers; ++txersRead) {
+        Transmitter transmitter = new Transmitter();
+        byte[] baseId = new byte[Transmitter.TRANSMITTER_ID_SIZE];
+        byte[] mask = new byte[Transmitter.TRANSMITTER_ID_SIZE];
+        in.get(baseId);
+        in.get(mask);
+        transmitter.setBaseId(baseId);
+        transmitter.setMask(mask);
+        rule.getTransmitters()[txersRead] = transmitter;
+        if(log.isDebugEnabled()){
+        log.debug("[Rule {}] Transmitter: {}.", Integer.valueOf(rulesRead), transmitter);
+        }
+      }
 
-			rule.setUpdateInterval(in.getLong());
-			log.debug("[Rule {}] Rule: {}.", rulesRead, rule);
-			message.getRules()[rulesRead] = rule;
-		}
+      rule.setUpdateInterval(in.getLong());
+      if(log.isDebugEnabled()){
+        log.debug("[Rule {}] Rule: {}.", Integer.valueOf(rulesRead), rule);
+      }
+      message.getRules()[rulesRead] = rule;
+    }
 
-		out.write(message);
+    out.write(message);
 
-		return MessageDecoderResult.OK;
-	}
+    return MessageDecoderResult.OK;
+  }
 
-	public void finishDecode(IoSession session, ProtocolDecoderOutput out)
-			throws Exception {
-		// Nothing to do
+  @Override
+  public void finishDecode(IoSession session, ProtocolDecoderOutput out)
+      throws Exception {
+    // Nothing to do
 
-	}
+  }
 
 }

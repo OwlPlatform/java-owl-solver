@@ -25,16 +25,17 @@ import org.apache.mina.filter.codec.ProtocolDecoderException;
 import org.apache.mina.filter.codec.ProtocolDecoderOutput;
 import org.apache.mina.filter.codec.demux.MessageDecoder;
 import org.apache.mina.filter.codec.demux.MessageDecoderResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.owlplatform.common.SampleMessage;
 
+/**
+ * Decoder for the {@code SampleMessage} according to the Solver-Aggregator protocol.
+ * @author Robert Moore
+ *
+ */
 public class SampleDecoder implements MessageDecoder {
-
-	private static final Logger log = LoggerFactory
-			.getLogger(SampleDecoder.class);
-
+  
+	@Override
 	public MessageDecoderResult decodable(IoSession session, IoBuffer buffer) {
 
 		// TODO: Decide on some max limit 64k is IP
@@ -56,6 +57,7 @@ public class SampleDecoder implements MessageDecoder {
 		return MessageDecoderResult.NEED_DATA;
 	}
 
+	@Override
 	public MessageDecoderResult decode(IoSession session, IoBuffer in,
 			ProtocolDecoderOutput out) throws Exception {
 
@@ -96,7 +98,8 @@ public class SampleDecoder implements MessageDecoder {
 		return MessageDecoderResult.OK;
 	}
 
-	public void finishDecode(IoSession arg0, ProtocolDecoderOutput arg1)
+	@Override
+  public void finishDecode(IoSession arg0, ProtocolDecoderOutput arg1)
 			throws Exception {
 		// TODO Auto-generated method stub
 

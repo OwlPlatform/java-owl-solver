@@ -19,25 +19,24 @@
 
 package com.owlplatform.solver.protocol.codec;
 
-import java.nio.charset.Charset;
-
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.apache.mina.filter.codec.demux.MessageEncoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.owlplatform.solver.protocol.messages.SubscriptionMessage;
 import com.owlplatform.solver.protocol.messages.Transmitter;
 import com.owlplatform.solver.rules.SubscriptionRequestRule;
 
+/**
+ * Encodes a {@code SubscriptionMessage} according to the Solver-Aggregator protocol.
+ * @author Robert Moore
+ *
+ */
 public class SubscriptionMessageEncoder implements
 		MessageEncoder<SubscriptionMessage> {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(SubscriptionMessageEncoder.class);
-
+  @Override
 	public void encode(IoSession session, SubscriptionMessage message,
 			ProtocolEncoderOutput out) throws Exception {
 		IoBuffer buffer = IoBuffer.allocate(message.getLengthPrefix() + 4);
@@ -55,8 +54,6 @@ public class SubscriptionMessageEncoder implements
 			}
 			buffer.putLong(rule.getUpdateInterval());
 		}
-
-		log.debug("Message length: {}.", buffer.capacity());
 
 		buffer.flip();
 		out.write(buffer);

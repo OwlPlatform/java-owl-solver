@@ -19,11 +19,8 @@
 
 package com.owlplatform.solver.protocol.codec;
 
-import java.nio.ByteBuffer;
-
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.apache.mina.filter.codec.demux.MessageEncoder;
 import org.slf4j.Logger;
@@ -31,23 +28,46 @@ import org.slf4j.LoggerFactory;
 
 import com.owlplatform.solver.protocol.messages.HandshakeMessage;
 
+/**
+ * Encoder for the {@code HandshakeMessage} according to the Solver-Aggregator protocol.
+ * @author Robert Moore
+ *
+ */
 public class HandshakeEncoder implements MessageEncoder<HandshakeMessage> {
 
+	/**
+	 * Logger for this class.
+	 */
 	private static final Logger log = LoggerFactory
 			.getLogger(HandshakeEncoder.class);
 
+	/**
+	 * Key to track connection state.
+	 */
 	private static final String CONN_STATE_KEY = HandshakeEncoder.class
 			.getName()
 			+ ".STATE";
 
+	/**
+	 * Connection state class.  Used to determine if a handshake was already exchanged.
+	 * @author Robert Moore
+	 *
+	 */
 	private static final class HubConnectionState {
+	  /**
+	   * Flag to indicate if a handshake was previously encoded.
+	   */
 		boolean handshakeSent = false;
-	};
-
-	public void dispose(IoSession arg0) throws Exception {
-		// No objects created by this encoder.
+		
+		/**
+		 * Creates a new {@code HubConnectionState} with the handshake flag set to false.
+		 */
+		public HubConnectionState(){
+		  super();
+		}
 	}
 
+	@Override
 	public void encode(IoSession session, HandshakeMessage message,
 			ProtocolEncoderOutput out) throws Exception {
 		HubConnectionState connState = (HubConnectionState) session

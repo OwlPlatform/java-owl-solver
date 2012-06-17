@@ -20,27 +20,22 @@
 package com.owlplatform.solver.protocol.codec;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.codec.ProtocolEncoder;
 import org.apache.mina.filter.codec.ProtocolEncoderOutput;
 import org.apache.mina.filter.codec.demux.MessageEncoder;
-import org.apache.mina.filter.util.SessionAttributeInitializingFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.owlplatform.common.SampleMessage;
 
+/**
+ * Encodes a {@code SampleMessage} according to the Solver-Aggregator protocol.
+ * @author Robert Moore
+ *
+ */
 public class SampleEncoder implements MessageEncoder<SampleMessage> {
 
-	private static final Logger log = LoggerFactory
-			.getLogger(SampleEncoder.class);
-
-	public void dispose(IoSession arg0) throws Exception {
-	}
-
+	@Override
 	public void encode(IoSession session, SampleMessage message,
 			ProtocolEncoderOutput out) throws Exception {
 
