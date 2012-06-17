@@ -134,7 +134,7 @@ public class SolverAggregatorInterface {
     @Override
     public void solverSampleReceived(IoSession session,
         SampleMessage sampleMessage) {
-      this.solverSampleReceived(session, sampleMessage);
+      this.parent.solverSampleReceived(session, sampleMessage);
     }
 
     @Override
@@ -377,7 +377,7 @@ public class SolverAggregatorInterface {
 
     if (this.session != null) {
       log.error("Already connected!");
-      return false;
+      return true;
     }
 
     long waitTime = timeout;
