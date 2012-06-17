@@ -117,7 +117,7 @@ public class SolverAggregatorConnection {
 	/**
 	 * Flag to indicate if the aggregator is disconnected.
 	 */
-	protected boolean connectionDead = false;
+	protected boolean connected = true;
 
 	/**
 	 * Map of subscription rules to their request numbers.  Used internally to cancel a subscription
@@ -180,7 +180,7 @@ public class SolverAggregatorConnection {
 	 */
 	public boolean connect(long timeout) {
 	  
-		return !(this.connectionDead = this.agg.connect(timeout));
+		return (this.connected = this.agg.connect(timeout));
 	}
 	
 	/**
@@ -192,7 +192,7 @@ public class SolverAggregatorConnection {
 	@Deprecated
   public boolean connect() {
     
-    return !(this.connectionDead = this.agg.connect(0));
+    return this.connect(0);
   }
 
 	/**
@@ -232,12 +232,12 @@ public class SolverAggregatorConnection {
 	 * IllegalStateException.
 	 * 
 	 * @return the next sample received from the Aggregator.
-	 * @throws Exception
-	 *             is this method is called after the Aggregator has been
+	 * @throws IllegalStateException
+	 *             if this method is called after the Aggregator has been
 	 *             disconnected.
 	 */
-	public SampleMessage getNextSample() throws Exception {
-		if (!this.connectionDead) {
+	public SampleMessage getNextSample() {
+		if (this.connected) {
 			try {
 				return this.sampleQueue.take();
 			} catch (InterruptedException e) {
@@ -268,15 +268,12 @@ public class SolverAggregatorConnection {
 	}
 
 	/**
-	 * Returns whether or not the connection to the aggregator is still "live",
-	 * meaning that it may at some point return a Sample. A connection is
-	 * considered "live" as long as {@link #disconnect()} has not yet been
-	 * called, even if the connection hasn't yet been established.
+	 * Returns the current connection state for this {@code SolverAggregatorConnection}.
 	 * 
-	 * @return {@code true} if the connection is "live", else {@code false}.
+	 * @return {@code true} if the connection to the aggregtor is established, else {@code false}.
 	 */
-	public boolean isConnectionLive() {
-		return !this.connectionDead;
+	public boolean isConnected() {
+		return this.connected;
 	}
 
 	/**
@@ -369,7 +366,7 @@ public class SolverAggregatorConnection {
 	 * @param aggregator
 	 */
 	void connectionEnded(SolverAggregatorInterface aggregator) {
-		this.connectionDead = true;
+		this.connected = false;
 		
 		synchronized (this.sampleQueue) {
 			this.sampleQueue.notifyAll();
