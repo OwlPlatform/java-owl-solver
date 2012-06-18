@@ -150,8 +150,18 @@ public class SolverAggregatorConnection {
 	}
 
 	/**
-	 * Creates a new Aggregator interface for a solver with the specified buffer
-	 * size.
+	 * <p>Creates a new Aggregator interface for a solver with the specified buffer
+	 * size. In addition, it will set the following values for the {@code SolverAggregatorInterface} it uses:
+	 * <ul>
+	 *   <li>Connection retry delay: 5 seconds</li>
+	 *   <li>Connection timeout: 5 seconds</li>
+	 *   <li>Disconnect on exception: {@code true}</li>
+	 *   <li>Automatic reconnect: {@code true}</li>
+	 *   <li>Aggregator host: localhost</li>
+	 *   <li>Aggregator port: 7008</li>
+	 * </ul>
+	 * </p>
+	 * 
 	 * 
 	 * @param bufferSize
 	 *            the number of samples to buffer for the solver. Samples
