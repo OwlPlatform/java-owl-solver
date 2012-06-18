@@ -368,6 +368,7 @@ public class SolverAggregatorInterface {
    *         period, else {@code false}.
    */
   public boolean connect(long timeout) {
+    this.connectionTimeout = timeout;
     if (this.connector == null) {
       if (!this.setConnector()) {
         log.error("Unable to set up connection to the aggregator.");
@@ -377,20 +378,20 @@ public class SolverAggregatorInterface {
 
     if (this.session != null) {
       log.error("Already connected!");
-      return true;
+      return false;
     }
 
     long waitTime = timeout;
     do {
       long startAttempt = System.currentTimeMillis();
       if (this._connect(waitTime)) {
-        log.debug("Connection succeeded!");
+        log.info("Connected to {}",this);
         return true;
       }
 
       if (this.stayConnected) {
         long retryDelay = this.connectionRetryDelay;
-        if (timeout < this.connectionRetryDelay * 2) {
+        if (timeout > 0 && timeout < this.connectionRetryDelay * 2) {
           retryDelay = timeout / 2;
           if (retryDelay < 100) {
             retryDelay = 100;
@@ -490,7 +491,7 @@ public class SolverAggregatorInterface {
    */
   protected void _disconnect() {
 
-    if (this.session != null && !this.session.isClosing()) {
+    if (this.session != null) {
       log.debug("Closing connection to aggregator at {} (waiting {}ms).",
           this.session.getRemoteAddress(), Long.valueOf(this.connectionTimeout));
       this.session.close(false).awaitUninterruptibly(this.connectionTimeout);
@@ -515,14 +516,15 @@ public class SolverAggregatorInterface {
     this.connected = false;
     this._disconnect();
     while (this.stayConnected) {
-      log.info("Reconnecting to aggregator at {}:{}", this.host,
-          Integer.valueOf(this.port));
+      
       try {
         Thread.sleep(this.connectionRetryDelay);
       } catch (InterruptedException ie) {
         // Ignored
       }
-      if (this.doConnectionSetup()) {
+      log.debug("Reconnecting to aggregator at {}:{}", this.host,
+          Integer.valueOf(this.port));
+      if (this.connect(this.connectionTimeout)) {
         return;
       }
 
