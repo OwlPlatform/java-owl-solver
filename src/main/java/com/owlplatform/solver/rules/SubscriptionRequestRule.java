@@ -20,6 +20,7 @@
 package com.owlplatform.solver.rules;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 import com.owlplatform.common.SampleMessage;
 import com.owlplatform.solver.protocol.messages.Transmitter;
@@ -38,7 +39,7 @@ public class SubscriptionRequestRule {
   /**
    * Physical layer identifier for the devices in this rule.
    */
-  private byte physicalLayer;
+  private byte physicalLayer = SampleMessage.PHYSICAL_LAYER_ALL;
 
   /**
    * The set of transmitter values that this rule contains.
@@ -49,7 +50,7 @@ public class SubscriptionRequestRule {
    * The minimum frequency to accept updates from the aggregator, in
    * milliseconds.
    */
-  private long updateInterval;
+  private long updateInterval = 0l;
 
   /**
    * Gets the current physical layer identifier for this rule.
@@ -101,6 +102,26 @@ public class SubscriptionRequestRule {
    */
   public void setTransmitters(Transmitter[] transmitters) {
     this.transmitters = transmitters;
+  }
+
+  /**
+   * Sets the transmitters for this rule. Any previous values are discarded.
+   * 
+   * @param transmitters
+   *          the new transmitters.
+   */
+  public void setTransmitters(Collection<Transmitter> transmitters) {
+    if (transmitters == null) {
+      this.transmitters = null;
+      return;
+    }
+    int size = transmitters.size();
+    if (size == 0) {
+      this.transmitters = null;
+      return;
+    }
+    this.transmitters = transmitters.toArray(new Transmitter[]{});
+    
   }
 
   /**

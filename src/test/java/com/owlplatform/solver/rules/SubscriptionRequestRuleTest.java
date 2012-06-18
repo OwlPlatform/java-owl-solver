@@ -1,6 +1,8 @@
 package com.owlplatform.solver.rules;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -84,6 +86,13 @@ public class SubscriptionRequestRuleTest {
   private static final Transmitter[] TX_ARR_B3 = new Transmitter[] { TX_EXACT2,
       TX_EXACT1, TX_EXACT2 };
 
+  private static final Collection<Transmitter> TX_COLL_A1 = new LinkedList<Transmitter>();
+  
+  static {
+    TX_COLL_A1.add(TX_EXACT1);
+    TX_COLL_A1.add(TX_EXACT2);
+  }
+  
   /**
    * Tests the setter and getter methods.
    */
@@ -172,7 +181,7 @@ public class SubscriptionRequestRuleTest {
     Assert.assertFalse(s2.equals(s1));
 
     s2.setUpdateInterval(INTERVAL_7_5SEC);
-    s2.setTransmitters(null);
+    s2.setTransmitters((Transmitter[])null);
     Assert.assertFalse(s1.equals(s2));
     Assert.assertFalse(s2.equals(s1));
 
@@ -183,15 +192,18 @@ public class SubscriptionRequestRuleTest {
     s1.setTransmitters(TX_ARR_B2);
     s2.setTransmitters(TX_ARR_B3);
     Assert.assertFalse(s1.equals(s2));
-    
-    // FIXME: Need to ensure no duplicate entries in the rule sets
-    //         didn't verify all rules in s1
-    Assert.assertTrue(s2.equals(s1));
+    Assert.assertFalse(s2.equals(s1));
     
     s1.setTransmitters(TX_ARR_A1);
     s2.setTransmitters(TX_ARR_A2);
     Assert.assertTrue(s1.equals((Object) s2));
     Assert.assertTrue(s2.equals((Object) s1));
+    
+    
+    s1.setTransmitters(TX_COLL_A1);
+    Assert.assertTrue(s1.equals((Object) s2));
+    Assert.assertTrue(s2.equals((Object) s1));
+    
     Assert.assertFalse(s1.equals(Integer.valueOf(0)));
   }
   
