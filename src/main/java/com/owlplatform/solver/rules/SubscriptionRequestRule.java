@@ -21,8 +21,10 @@ package com.owlplatform.solver.rules;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 
 import com.owlplatform.common.SampleMessage;
+import com.owlplatform.common.util.HashableByteArray;
 import com.owlplatform.solver.protocol.messages.Transmitter;
 
 /**
@@ -120,8 +122,8 @@ public class SubscriptionRequestRule {
       this.transmitters = null;
       return;
     }
-    this.transmitters = transmitters.toArray(new Transmitter[]{});
-    
+    this.transmitters = transmitters.toArray(new Transmitter[] {});
+
   }
 
   /**
@@ -211,13 +213,16 @@ public class SubscriptionRequestRule {
     if (this.getNumTransmitters() != rule.getNumTransmitters()) {
       return false;
     }
+    HashSet<Transmitter> matchedTx = new HashSet<Transmitter>();
     if (this.transmitters != null) {
       // Check all transmitters
       for (Transmitter txer : this.transmitters) {
         boolean matched = false;
         for (Transmitter oTxer : rule.transmitters) {
-          if (Arrays.equals(txer.getBaseId(), oTxer.getBaseId())
+          if (!matchedTx.contains(oTxer)
+              && Arrays.equals(txer.getBaseId(), oTxer.getBaseId())
               && Arrays.equals(txer.getMask(), oTxer.getMask())) {
+            matchedTx.add(oTxer);
             matched = true;
             break;
           }
