@@ -608,7 +608,7 @@ public class SolverAggregatorInterface {
     if (Boolean.TRUE.equals(handshakeCheck)) {
       SubscriptionMessage msg = this.generateGenericSubscriptionMessage();
       log.debug("Attempting to write {}.", msg);
-      this.session.write(msg);
+      session.write(msg);
       this.connected = false;
     }
   }
@@ -801,7 +801,7 @@ public class SolverAggregatorInterface {
    *          the exception
    */
   protected void exceptionCaught(IoSession session, Throwable cause) {
-    log.error("Unhandled exception for: {}", cause);
+    log.error("Unhandled exception for: " + String.valueOf(session), cause);
     if (this.disconnectOnException) {
       this._disconnect();
     }
