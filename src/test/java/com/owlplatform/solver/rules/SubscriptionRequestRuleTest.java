@@ -19,21 +19,6 @@ import com.owlplatform.solver.protocol.messages.Transmitter;
 public class SubscriptionRequestRuleTest {
 
   /**
-   * The default update interval for generic subscription messages.
-   */
-  private static final long INTERVAL_DEFAULT = 0l;
-
-  /**
-   * The default physical layer identifier for generic subscription messages.
-   */
-  private static final byte PHY_DEFAULT = 0;
-
-  /**
-   * The default number of transmitters in a generic subscription message.
-   */
-  private static final int NUM_TXERS_DEFAULT = 0;
-
-  /**
    * An update interval of 1 second.
    */
   private static final long INTERVAL_1SEC = 1000;
@@ -72,20 +57,18 @@ public class SubscriptionRequestRuleTest {
   /**
    * Transmitter array for testing.
    */
-  private static final Transmitter[] TX_ARR_B1 = new Transmitter[] { TX_EXACT2,
-      TX_EXACT1, TX_EXACT3 };
-  /**
-   * Transmitter array for testing.
-   */
-  private static final Transmitter[] TX_ARR_B2 = new Transmitter[] { TX_EXACT3,
+  private static final Transmitter[] TX_ARR_B1 = new Transmitter[] { TX_EXACT3,
       TX_EXACT1, TX_EXACT2 };
   
   /**
    * Transmitter array for testing.
    */
-  private static final Transmitter[] TX_ARR_B3 = new Transmitter[] { TX_EXACT2,
+  private static final Transmitter[] TX_ARR_B2 = new Transmitter[] { TX_EXACT2,
       TX_EXACT1, TX_EXACT2 };
 
+  /**
+   * A collection of transmitters.
+   */
   private static final Collection<Transmitter> TX_COLL_A1 = new LinkedList<Transmitter>();
   
   static {
@@ -185,12 +168,12 @@ public class SubscriptionRequestRuleTest {
     Assert.assertFalse(s1.equals(s2));
     Assert.assertFalse(s2.equals(s1));
 
-    s2.setTransmitters(TX_ARR_B2);
+    s2.setTransmitters(TX_ARR_B1);
     Assert.assertFalse(s1.equals(s2));
     Assert.assertFalse(s2.equals(s1));
     
-    s1.setTransmitters(TX_ARR_B2);
-    s2.setTransmitters(TX_ARR_B3);
+    s1.setTransmitters(TX_ARR_B1);
+    s2.setTransmitters(TX_ARR_B2);
     Assert.assertFalse(s1.equals(s2));
     Assert.assertFalse(s2.equals(s1));
     
@@ -222,7 +205,7 @@ public class SubscriptionRequestRuleTest {
     
     Assert.assertEquals(s1.hashCode(),s2.hashCode());
     
-    s1.setTransmitters(TX_ARR_B3);
+    s1.setTransmitters(TX_ARR_B2);
     Assert.assertFalse(s1.hashCode() == s2.hashCode());
     }
 }

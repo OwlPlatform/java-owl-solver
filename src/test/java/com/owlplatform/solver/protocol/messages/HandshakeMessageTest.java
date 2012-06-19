@@ -1,7 +1,6 @@
 package com.owlplatform.solver.protocol.messages;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,6 +36,9 @@ public class HandshakeMessageTest {
    */
   private static final byte VERSION = 55;
 
+  /**
+   * Result of calling toString() on a newly-initialized {@code HandshakeMessage}.
+   */
   private static final String INIT_TO_STRING = "Solver Handshake: 0, , 0x00, 0x00";
   
   /**
@@ -69,8 +71,8 @@ public class HandshakeMessageTest {
    */
   @Before
   public void createHS() {
-    h1 = new HandshakeMessage();
-    h2 = new HandshakeMessage();
+    this.h1 = new HandshakeMessage();
+    this.h2 = new HandshakeMessage();
   }
 
   /**
@@ -78,16 +80,16 @@ public class HandshakeMessageTest {
    */
   @Test
   public void testHashCode() {
-    Assert.assertEquals(h1.hashCode(), h2.hashCode());
+    Assert.assertEquals(this.h1.hashCode(), this.h2.hashCode());
 
-    h1.setVersionNumber(VERSION);
+    this.h1.setVersionNumber(VERSION);
 
-    Assert.assertFalse(h1.hashCode() == h2.hashCode());
+    Assert.assertFalse(this.h1.hashCode() == this.h2.hashCode());
 
-    h1 = HandshakeMessage.getDefaultMessage();
-    h2 = HandshakeMessage.getDefaultMessage();
+    this.h1 = HandshakeMessage.getDefaultMessage();
+    this.h2 = HandshakeMessage.getDefaultMessage();
 
-    Assert.assertEquals(h1.hashCode(), h2.hashCode());
+    Assert.assertEquals(this.h1.hashCode(), this.h2.hashCode());
   }
 
   /**
@@ -110,81 +112,91 @@ public class HandshakeMessageTest {
 
   }
 
+  /**
+   * Tests the getters and setters in {@code HandshakeMessge}.
+   * @throws UnsupportedEncodingException if "US-ASCII" is not available.
+   */
   @Test
   public void testGetAndSet() throws UnsupportedEncodingException {
-    h1.setProtocolString(PROTO_STRING);
-    Assert.assertEquals(PROTO_STRING, h1.getProtocolString());
+    this.h1.setProtocolString(PROTO_STRING);
+    Assert.assertEquals(PROTO_STRING, this.h1.getProtocolString());
     Assert.assertEquals(PROTO_STRING.getBytes("US-ASCII").length,
-        h1.getStringLength());
+        this.h1.getStringLength());
 
-    h1.setReservedBits(RESERVED);
-    Assert.assertEquals(RESERVED, h1.getReservedBits());
+    this.h1.setReservedBits(RESERVED);
+    Assert.assertEquals(RESERVED, this.h1.getReservedBits());
 
-    h1.setVersionNumber(VERSION);
-    Assert.assertEquals(VERSION, h1.getVersionNumber());
+    this.h1.setVersionNumber(VERSION);
+    Assert.assertEquals(VERSION, this.h1.getVersionNumber());
   }
 
+  /**
+   * Tests the {@code toString()} method.
+   */
   @Test
   public void testToString() {
-    Assert.assertEquals(INIT_TO_STRING,h1.toString());
+    Assert.assertEquals(INIT_TO_STRING,this.h1.toString());
     
     
-    h1 = HandshakeMessage.getDefaultMessage();
-    Assert.assertEquals(DEF_TO_STRING, h1.toString());
+    this.h1 = HandshakeMessage.getDefaultMessage();
+    Assert.assertEquals(DEF_TO_STRING, this.h1.toString());
 
-    h1.setProtocolString(PROTO_STRING);
-    h1.setVersionNumber(VERSION);
-    h1.setReservedBits(RESERVED);
+    this.h1.setProtocolString(PROTO_STRING);
+    this.h1.setVersionNumber(VERSION);
+    this.h1.setReservedBits(RESERVED);
 
-    Assert.assertEquals(ALT_TO_STRING, h1.toString());
+    Assert.assertEquals(ALT_TO_STRING, this.h1.toString());
   }
 
+  /**
+   * Tests the {@code equals()} methods.
+   */
   @Test
   public void testEquals() {
-    Assert.assertTrue(h1.equals(h2));
-    Assert.assertTrue(h2.equals(h1));
+    Assert.assertTrue(this.h1.equals(this.h2));
+    Assert.assertTrue(this.h2.equals(this.h1));
     
-    Assert.assertTrue(h1.equals((Object)h2));
-    Assert.assertTrue(h2.equals((Object)h1));
+    Assert.assertTrue(this.h1.equals((Object)this.h2));
+    Assert.assertTrue(this.h2.equals((Object)this.h1));
 
-    h1 = HandshakeMessage.getDefaultMessage();
-    Assert.assertFalse(h1.equals(h2));
-    Assert.assertFalse(h2.equals(h1));
+    this.h1 = HandshakeMessage.getDefaultMessage();
+    Assert.assertFalse(this.h1.equals(this.h2));
+    Assert.assertFalse(this.h2.equals(this.h1));
     
-    h2 = HandshakeMessage.getDefaultMessage();
-    h1.setVersionNumber(VERSION);
-    Assert.assertFalse(h1.equals(h2));
-    Assert.assertFalse(h2.equals(h1));
+    this.h2 = HandshakeMessage.getDefaultMessage();
+    this.h1.setVersionNumber(VERSION);
+    Assert.assertFalse(this.h1.equals(this.h2));
+    Assert.assertFalse(this.h2.equals(this.h1));
     
-    h1.setVersionNumber(HandshakeMessage.PROTOCOL_VERSION);
-    h1.setReservedBits(RESERVED);
-    Assert.assertFalse(h1.equals(h2));
-    Assert.assertFalse(h2.equals(h1));
+    this.h1.setVersionNumber(HandshakeMessage.PROTOCOL_VERSION);
+    this.h1.setReservedBits(RESERVED);
+    Assert.assertFalse(this.h1.equals(this.h2));
+    Assert.assertFalse(this.h2.equals(this.h1));
     
-    h1.setReservedBits(HandshakeMessage.PROTOCOL_RESERVED_BITS);
-    h1.setProtocolString(null);
-    Assert.assertFalse(h1.equals(h2));
-    Assert.assertFalse(h2.equals(h1));
+    this.h1.setReservedBits(HandshakeMessage.PROTOCOL_RESERVED_BITS);
+    this.h1.setProtocolString(null);
+    Assert.assertFalse(this.h1.equals(this.h2));
+    Assert.assertFalse(this.h2.equals(this.h1));
     
-    h1.setStringLength(HandshakeMessage.PROTOCOL_STRING_LENGTH);
-    Assert.assertFalse(h1.equals(h2));
-    Assert.assertFalse(h2.equals(h1));
+    this.h1.setStringLength(HandshakeMessage.PROTOCOL_STRING_LENGTH);
+    Assert.assertFalse(this.h1.equals(this.h2));
+    Assert.assertFalse(this.h2.equals(this.h1));
     
-    h1.setProtocolString(HandshakeMessage.PROTOCOL_STRING);
-    Assert.assertTrue(h1.equals(h2));
-    Assert.assertTrue(h2.equals(h1));
+    this.h1.setProtocolString(HandshakeMessage.PROTOCOL_STRING);
+    Assert.assertTrue(this.h1.equals(this.h2));
+    Assert.assertTrue(this.h2.equals(this.h1));
     
-    h1.setProtocolString(PROTO_STRING);
-    h2.setProtocolString(PROTO_STRING_2);
-    Assert.assertFalse(h1.equals(h2));
-    Assert.assertFalse(h2.equals(h1));
+    this.h1.setProtocolString(PROTO_STRING);
+    this.h2.setProtocolString(PROTO_STRING_2);
+    Assert.assertFalse(this.h1.equals(this.h2));
+    Assert.assertFalse(this.h2.equals(this.h1));
 
-    h2.setProtocolString(PROTO_STRING);
-    h2.setStringLength(1);
-    Assert.assertFalse(h1.equals(h2));
-    Assert.assertFalse(h2.equals(h1));
+    this.h2.setProtocolString(PROTO_STRING);
+    this.h2.setStringLength(1);
+    Assert.assertFalse(this.h1.equals(this.h2));
+    Assert.assertFalse(this.h2.equals(this.h1));
     
-    Assert.assertFalse(h1.equals(Integer.valueOf(0)));
+    Assert.assertFalse(this.h1.equals(Integer.valueOf(0)));
   }
 
 }

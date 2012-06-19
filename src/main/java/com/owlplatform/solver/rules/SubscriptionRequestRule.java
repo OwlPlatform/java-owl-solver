@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.owlplatform.common.SampleMessage;
-import com.owlplatform.common.util.HashableByteArray;
 import com.owlplatform.solver.protocol.messages.Transmitter;
 
 /**
