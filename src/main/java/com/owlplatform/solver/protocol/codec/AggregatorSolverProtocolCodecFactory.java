@@ -37,7 +37,7 @@ public class AggregatorSolverProtocolCodecFactory extends
   /**
    * Codec name for inserting into filter chains.
    */
-  public static final String CODEC_NAME = "Grail Aggregator-Solver codec";
+  public static final String CODEC_NAME = "Owl Platform Aggregator-Solver codec";
 
   /**
    * Creates a new protocol codec factory for either a solver or aggregator.

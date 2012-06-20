@@ -1,6 +1,6 @@
 /*
- * GRAIL Real Time Localization System
- * Copyright (C) 2011 Rutgers University and Robert Moore
+ * Owl Platform Solver-Aggregator Library for Java
+ * Copyright (C) 2012 Robert Moore and the Owl Platform
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
