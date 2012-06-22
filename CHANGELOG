@@ -1,0 +1,11 @@
+                Owl Platform Solver-Aggregator Library for Java
+                                  Change Log
+
+Owl Platform: <http://www.owlplatform.com>
+Project Website: <https://github.com/OwlPlatform/java-owl-solver>
+
+Version 1.0.1 - TBD
+ + Initial version ported from GRAIL RTLS at SourceForge.net.
+   <http://www.sf.net/projects/grailrtls/>
+ + Fully documented with Javadoc.
+ + JUnit test cases added.
