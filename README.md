@@ -33,8 +33,7 @@ applications can receive only the data they want.
 
 ## Dependencies ##
 This library depends on the following libraries:
-* [Owl Common Library version 1.0.2]
-* (https://github.com/OwlPlatform/java-owl-common/downloads 
+* [Owl Common Library version 1.0.2] (https://github.com/OwlPlatform/java-owl-common/downloads 
   "Owl Common Library Downloads")
 * [Apache Mina Core version 2.0.4](http://mina.apache.org/downloads.html
   "Apache Mina Downloads")
