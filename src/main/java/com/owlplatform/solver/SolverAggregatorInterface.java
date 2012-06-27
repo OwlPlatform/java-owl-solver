@@ -362,13 +362,16 @@ public class SolverAggregatorInterface {
    * until a connection is established or the timeout is exceeded. A timeout of
    * 0 indicates an infinite timeout value.
    * 
-   * @param timeout
+   * @param maxWait
    *          how long to wait (in milliseconds) for the connection to
    * @return {@code true} if the connection is established within the timeout
    *         period, else {@code false}.
    */
-  public boolean connect(long timeout) {
-    this.connectionTimeout = timeout;
+  public boolean connect(long maxWait) {
+    long timeout = maxWait;
+    if (timeout <= 0) {
+      timeout = this.connectionTimeout;
+    }
     if (this.connector == null) {
       if (!this.setConnector()) {
         log.error("Unable to set up connection to the aggregator.");
@@ -380,10 +383,10 @@ public class SolverAggregatorInterface {
       log.error("Already connected!");
       return false;
     }
-
     long waitTime = timeout;
     do {
       long startAttempt = System.currentTimeMillis();
+      this.connector.setConnectTimeoutMillis(waitTime-5);
       if (this._connect(waitTime)) {
         log.info("Connected to {}",this);
         return true;
@@ -391,10 +394,10 @@ public class SolverAggregatorInterface {
 
       if (this.stayConnected) {
         long retryDelay = this.connectionRetryDelay;
-        if (timeout > 0 && timeout < this.connectionRetryDelay * 2) {
+        if (timeout < this.connectionRetryDelay * 2) {
           retryDelay = timeout / 2;
-          if (retryDelay < 100) {
-            retryDelay = 100;
+          if (retryDelay < 500) {
+            retryDelay = 500;
           }
         }
         try {
@@ -408,6 +411,7 @@ public class SolverAggregatorInterface {
         waitTime = waitTime - (System.currentTimeMillis() - startAttempt);
       }
     } while (this.stayConnected && waitTime > 0);
+    
     this._disconnect();
     this.finishConnection();
 
