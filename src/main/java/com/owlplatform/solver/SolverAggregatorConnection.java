@@ -65,6 +65,7 @@ public class SolverAggregatorConnection {
 
 		@Override
 		public void connectionEnded(SolverAggregatorInterface aggregator) {
+		  this.parent.subscriptionAcknowledged = false;
 			this.parent.connectionEnded(aggregator);
 		}
 
@@ -75,6 +76,7 @@ public class SolverAggregatorConnection {
 
 		@Override
 		public void connectionInterrupted(SolverAggregatorInterface aggregator) {
+		  this.parent.subscriptionAcknowledged = false;
 		  // Ignored
 		}
 
