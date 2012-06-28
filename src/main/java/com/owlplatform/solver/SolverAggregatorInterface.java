@@ -386,9 +386,9 @@ public class SolverAggregatorInterface {
     long waitTime = timeout;
     do {
       long startAttempt = System.currentTimeMillis();
-      this.connector.setConnectTimeoutMillis(waitTime-5);
+      this.connector.setConnectTimeoutMillis(waitTime - 5);
       if (this._connect(waitTime)) {
-        log.info("Connected to {}",this);
+        log.info("Connected to {}", this);
         return true;
       }
 
@@ -411,7 +411,7 @@ public class SolverAggregatorInterface {
         waitTime = waitTime - (System.currentTimeMillis() - startAttempt);
       }
     } while (this.stayConnected && waitTime > 0);
-    
+
     this._disconnect();
     this.finishConnection();
 
@@ -494,11 +494,13 @@ public class SolverAggregatorInterface {
    * filters that are already created. Resets the connection state.
    */
   protected void _disconnect() {
-
-    if (this.session != null) {
-      log.debug("Closing connection to aggregator at {} (waiting {}ms).",
+    this.connected = false;
+    if (this.session != null && !this.session.isClosing()) {
+      log.info("Closing connection to aggregator at {} (waiting {}ms).",
           this.session.getRemoteAddress(), Long.valueOf(this.connectionTimeout));
-      this.session.close(false).awaitUninterruptibly(this.connectionTimeout);
+      this.session.close(true)
+          .awaitUninterruptibly();
+       log.info("{} closed session.",this);
       this.session = null;
       this.sentHandshake = null;
       this.receivedHandshake = null;
@@ -520,7 +522,7 @@ public class SolverAggregatorInterface {
     this.connected = false;
     this._disconnect();
     while (this.stayConnected) {
-      
+
       try {
         Thread.sleep(this.connectionRetryDelay);
       } catch (InterruptedException ie) {
@@ -582,7 +584,6 @@ public class SolverAggregatorInterface {
     }
     if (Boolean.TRUE.equals(handshakeCheck)) {
       SubscriptionMessage msg = this.generateGenericSubscriptionMessage();
-      log.debug("Attempting to write {}.", msg);
       this.session.write(msg);
       this.connected = true;
     }
@@ -611,9 +612,8 @@ public class SolverAggregatorInterface {
     }
     if (Boolean.TRUE.equals(handshakeCheck)) {
       SubscriptionMessage msg = this.generateGenericSubscriptionMessage();
-      log.debug("Attempting to write {}.", msg);
       session.write(msg);
-      this.connected = false;
+      this.connected = true;
     }
   }
 
@@ -956,7 +956,9 @@ public class SolverAggregatorInterface {
   }
 
   /**
-   * Returns the current setting for the connection retry delay (the interval between connection attempts).
+   * Returns the current setting for the connection retry delay (the interval
+   * between connection attempts).
+   * 
    * @return the current connection retry delay, in milliseconds.
    */
   public long getConnectionRetryDelay() {
@@ -965,7 +967,9 @@ public class SolverAggregatorInterface {
 
   /**
    * Sets the connection retry delay for this interface.
-   * @param connectionRetryDelay the new connection retry delay, in milliseconds.
+   * 
+   * @param connectionRetryDelay
+   *          the new connection retry delay, in milliseconds.
    */
   public void setConnectionRetryDelay(long connectionRetryDelay) {
     this.connectionRetryDelay = connectionRetryDelay;
@@ -973,6 +977,7 @@ public class SolverAggregatorInterface {
 
   /**
    * Returns the session in use by this interface.
+   * 
    * @return the underlying session in use.
    */
   public IoSession getSession() {
