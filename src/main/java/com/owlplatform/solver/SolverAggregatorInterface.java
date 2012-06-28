@@ -495,11 +495,11 @@ public class SolverAggregatorInterface {
    */
   protected void _disconnect() {
     this.connected = false;
-    if (this.session != null && !this.session.isClosing()) {
+    IoSession currentSession = this.session;
+    if (currentSession != null && !currentSession.isClosing()) {
       log.info("Closing connection to aggregator at {} (waiting {}ms).",
-          this.session.getRemoteAddress(), Long.valueOf(this.connectionTimeout));
-      this.session.close(true)
-          .awaitUninterruptibly();
+          currentSession.getRemoteAddress(), Long.valueOf(this.connectionTimeout));
+      currentSession.close(true);
        log.info("{} closed session.",this);
       this.session = null;
       this.sentHandshake = null;
