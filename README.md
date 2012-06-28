@@ -3,7 +3,7 @@ Owl Platform Solver-Aggregator Library for Java
 
 Version 1.0.1-SNAPSHOT
 
-Last updated June 27, 2012
+Last updated June 28, 2012
 
 Project Website: <https://github.com/OwlPlatform/java-owl-solver>
 
