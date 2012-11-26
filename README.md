@@ -1,9 +1,9 @@
 Owl Platform Solver-Aggregator Library for Java
 ===============================================
 
-Version 1.0.1
+Version 1.0.4-SNAPSHOT
 
-Last updated June 28, 2012
+Last updated October 17, 2012
 
 Project Website: <https://github.com/OwlPlatform/java-owl-solver>
 
@@ -33,11 +33,11 @@ applications can receive only the data they want.
 
 ## Dependencies ##
 This library depends on the following libraries:
-* [Owl Common Library version 1.0.2] (https://github.com/OwlPlatform/java-owl-common/downloads 
+* [Owl Common Library version 1.0.3] (https://github.com/OwlPlatform/java-owl-common/downloads 
   "Owl Common Library Downloads")
-* [Apache Mina Core version 2.0.4](http://mina.apache.org/downloads.html
+* [Apache Mina Core version 2.0.7](http://mina.apache.org/downloads.html
   "Apache Mina Downloads")
-* [SLF4J API version 1.6.6](http://www.slf4j.org/download.html "SLF4J
+* [SLF4J API version 1.7.2](http://www.slf4j.org/download.html "SLF4J
   Downloads")
 
 Optionally, you can provide a binding for the SLF4J facade.  If you don't want

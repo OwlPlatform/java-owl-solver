@@ -4,6 +4,14 @@
 Owl Platform: <http://www.owlplatform.com>
 Project Website: <https://github.com/OwlPlatform/java-owl-solver>
 
+Version 1.0.4 - TBD
+
+Version 1.0.3 - October 17, 2012
+ + Updating MINA dependency (2.0.7).
+
+Version 1.0.2 - October 17, 2012
+ + Updating project dependencies.
+
 Version 1.0.1 - June 28, 2012
  + Initial version ported from GRAIL RTLS at SourceForge.net.
    <http://www.sf.net/projects/grailrtls/>
