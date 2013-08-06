@@ -203,7 +203,7 @@ public class SolverAggregatorInterface {
   /**
    * The port number the aggregator is listening on for solvers.
    */
-  private int port = 7009;
+  private int port = 7008;
 
   /**
    * The session of the connected aggregator, or {@code null} if no connection
