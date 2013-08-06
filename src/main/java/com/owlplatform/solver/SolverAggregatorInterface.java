@@ -47,7 +47,6 @@ import com.owlplatform.solver.rules.SubscriptionRequestRule;
  * Handles connection set-up and tear-down, as well as automatic handshaking.
  * 
  * @author Robert Moore II
- * 
  */
 public class SolverAggregatorInterface {
   /**
@@ -55,7 +54,6 @@ public class SolverAggregatorInterface {
    * SolverAggregatorInterface.
    * 
    * @author Robert Moore
-   * 
    */
   private static final class AdapterHandler implements SolverIoAdapter {
     /**
@@ -345,7 +343,6 @@ public class SolverAggregatorInterface {
    * until a connection is established. If callers wish to remain connected to
    * the aggregator, it is best to call {@code setStayConnected(true)} only
    * after calling this method.
-   * 
    * This method has been replaced by {@link #connect(long)}, and is equivalent
    * to calling {@code #connect(0)}.
    * 
@@ -496,11 +493,14 @@ public class SolverAggregatorInterface {
   protected void _disconnect() {
     this.connected = false;
     IoSession currentSession = this.session;
-    if (currentSession != null && !currentSession.isClosing()) {
-      log.info("Closing connection to aggregator at {} (waiting {}ms).",
-          currentSession.getRemoteAddress(), Long.valueOf(this.connectionTimeout));
-      currentSession.close(true);
-       log.info("{} closed session.",this);
+    if (currentSession != null) {
+      if (!currentSession.isClosing()) {
+
+        log.info("Closing connection to aggregator at {} (waiting {}ms).",
+            currentSession.getRemoteAddress(),
+            Long.valueOf(this.connectionTimeout));
+        currentSession.close(true);
+      }
       this.session = null;
       this.sentHandshake = null;
       this.receivedHandshake = null;
@@ -508,6 +508,7 @@ public class SolverAggregatorInterface {
       this.receivedSubscription = null;
       for (ConnectionListener listener : this.connectionListeners) {
         listener.connectionInterrupted(this);
+
       }
     }
   }

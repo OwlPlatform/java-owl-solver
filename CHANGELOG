@@ -4,7 +4,9 @@
 Owl Platform: <http://www.owlplatform.com>
 Project Website: <https://github.com/OwlPlatform/java-owl-solver>
 
-Version 1.0.4 - TBD
+Version 1.0.4 - August 6, 2013
+ + Fixed bug in reconnect code that was more common in Sensor library, but
+ which occasionally showed here.
 
 Version 1.0.3 - October 17, 2012
  + Updating MINA dependency (2.0.7).
